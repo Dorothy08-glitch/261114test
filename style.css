@@ -18,13 +18,13 @@ body {
 .app-container {
   background: #ffffff;
   width: 100%;
-  max-width: 480px;
+  max-width: 500px;
   border-radius: 24px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
   padding: 28px 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 /* 헤더 */
@@ -32,31 +32,59 @@ body {
   text-align: center;
 }
 
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .logo {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .flag-icon {
-  font-size: 28px;
+  font-size: 26px;
 }
 
 .logo h1 {
-  font-size: 26px;
+  font-size: 24px;
   color: #e53935;
   font-weight: 800;
   letter-spacing: -0.5px;
 }
 
-.subtitle {
-  font-size: 14px;
-  color: #666;
-  margin-top: 4px;
+.api-key-badge-btn {
+  background: #f1f3f5;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-/* 탭 네비게이션 */
+.api-key-badge-btn:hover {
+  background: #e9ecef;
+}
+
+.api-key-badge-btn.configured {
+  background: #e8f5e9;
+  border-color: #a5d6a7;
+  color: #2e7d32;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #666;
+  margin-top: 6px;
+  text-align: left;
+}
+
+/* 탭 네비게이션 (3분할) */
 .tab-nav {
   display: flex;
   background: #f1f3f5;
@@ -69,13 +97,14 @@ body {
   flex: 1;
   border: none;
   background: transparent;
-  padding: 10px 16px;
-  font-size: 15px;
+  padding: 10px 8px;
+  font-size: 14px;
   font-weight: 600;
   color: #666;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .tab-btn.active {
@@ -88,7 +117,7 @@ body {
 .mode-section {
   display: none;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .mode-section.active {
@@ -98,15 +127,15 @@ body {
 /* 카테고리 필터 버튼 */
 .category-filters {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
 }
 
 .filter-btn {
   border: 1px solid #e0e0e0;
   background: #fff;
-  padding: 6px 14px;
+  padding: 6px 12px;
   border-radius: 20px;
   font-size: 13px;
   color: #555;
@@ -251,7 +280,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 6px;
 }
 
 .control-btn {
@@ -331,7 +359,7 @@ body {
   background: #fff;
   border: 2px solid #e9ecef;
   border-radius: 12px;
-  padding: 14px;
+  padding: 13px;
   font-size: 15px;
   font-weight: 600;
   color: #333;
@@ -389,6 +417,323 @@ body {
 }
 
 .quiz-next-btn:hover {
+  background: #c62828;
+}
+
+/* =========================================
+   3. AI 튜터 섹션 스타일
+   ========================================= */
+.ai-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.api-notice {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #8d6e63;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.notice-btn {
+  background: #ffa000;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.notice-btn:hover {
+  background: #f57c00;
+}
+
+/* 추천 질문 칩 */
+.quick-chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.chip-btn {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #495057;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.chip-btn:hover {
+  background: #e9ecef;
+  border-color: #ced4da;
+}
+
+/* 채팅창 */
+.chat-box {
+  background: #fafafa;
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  height: 280px;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-message {
+  display: flex;
+  gap: 8px;
+  max-width: 90%;
+}
+
+.chat-message.ai-message {
+  align-self: flex-start;
+}
+
+.chat-message.user-message {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.chat-avatar {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.chat-bubble {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.ai-message .chat-bubble {
+  background: #ffffff;
+  color: #212529;
+  border: 1px solid #e2e8f0;
+  border-top-left-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.user-message .chat-bubble {
+  background: #e53935;
+  color: #ffffff;
+  border-top-right-radius: 4px;
+}
+
+/* 로딩 인디케이터 */
+.ai-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #888;
+  padding-left: 6px;
+}
+
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+}
+
+.typing-indicator span {
+  width: 6px;
+  height: 6px;
+  background: #e53935;
+  border-radius: 50%;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-6px); }
+}
+
+/* 입력 폼 */
+.chat-input-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input-wrapper input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid #ced4da;
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.chat-input-wrapper input:focus {
+  border-color: #e53935;
+}
+
+.chat-input-wrapper button {
+  background: #e53935;
+  color: white;
+  border: none;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.chat-input-wrapper button:hover {
+  background: #c62828;
+}
+
+/* =========================================
+   모달 창 스타일
+   ========================================= */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.modal-backdrop.open {
+  display: flex;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  font-size: 18px;
+  color: #212529;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+}
+
+.modal-desc {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.input-group input {
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+.input-group input:focus {
+  border-color: #e53935;
+}
+
+.modal-subtext {
+  font-size: 11px;
+  color: #777;
+  line-height: 1.4;
+}
+
+.modal-subtext a {
+  color: #e53935;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btn-clear {
+  background: #f1f3f5;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+}
+
+.btn-save {
+  background: #e53935;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-save:hover {
   background: #c62828;
 }
 

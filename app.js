@@ -122,45 +122,54 @@ const wordList = [
   }
 ];
 
-// 카테고리 한글명 매핑
 const categoryNames = {
   greeting: "기초 인사",
   daily: "필수 일상",
   numbers: "숫자"
 };
 
-// State 관리
+// 플래시카드 State
 let currentCategory = "all";
 let filteredWords = [...wordList];
 let currentCardIndex = 0;
 let isFlipped = false;
 
-// 퀴즈 관련 State
+// 퀴즈 State
 let quizQuestionIndex = 0;
 const totalQuizQuestions = 5;
 let quizScore = 0;
 let currentQuizQuestion = null;
 
+// Gemini API State
+const GEMINI_MODEL = "gemini-3.8-flash";
+const API_STORAGE_KEY = "halo_indo_gemini_api_key";
+let geminiApiKey = localStorage.getItem(API_STORAGE_KEY) || "";
+
 // =====================
 // 모드 전환
 // =====================
 function switchMode(mode) {
-  const flashcardTab = document.getElementById("tab-flashcard");
-  const quizTab = document.getElementById("tab-quiz");
-  const flashcardSec = document.getElementById("flashcard-section");
-  const quizSec = document.getElementById("quiz-section");
+  const tabs = {
+    flashcard: document.getElementById("tab-flashcard"),
+    quiz: document.getElementById("tab-quiz"),
+    ai: document.getElementById("tab-ai")
+  };
 
-  if (mode === "flashcard") {
-    flashcardTab.classList.add("active");
-    quizTab.classList.remove("active");
-    flashcardSec.classList.add("active");
-    quizSec.classList.remove("active");
-  } else {
-    quizTab.classList.add("active");
-    flashcardTab.classList.remove("active");
-    quizSec.classList.add("active");
-    flashcardSec.classList.remove("active");
+  const sections = {
+    flashcard: document.getElementById("flashcard-section"),
+    quiz: document.getElementById("quiz-section"),
+    ai: document.getElementById("ai-section")
+  };
+
+  Object.keys(tabs).forEach(key => {
+    tabs[key].classList.toggle("active", key === mode);
+    sections[key].classList.toggle("active", key === mode);
+  });
+
+  if (mode === "quiz") {
     startQuiz();
+  } else if (mode === "ai") {
+    checkApiKeyUI();
   }
 }
 
@@ -170,7 +179,6 @@ function switchMode(mode) {
 function filterCategory(category) {
   currentCategory = category;
 
-  // 버튼 스타일 변경
   document.querySelectorAll(".filter-btn").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.category === category);
   });
@@ -192,17 +200,14 @@ function renderCard() {
 
   const word = filteredWords[currentCardIndex];
   
-  // 앞면
   document.getElementById("card-front-word").textContent = word.indo;
   document.getElementById("card-front-pronounce").textContent = word.pronounce;
   
-  // 뒷면
   document.getElementById("card-back-tag").textContent = categoryNames[word.category] || "일반";
   document.getElementById("card-back-meaning").textContent = word.meaning;
   document.getElementById("card-back-example").textContent = word.example;
   document.getElementById("card-back-example-ko").textContent = word.exampleKo;
 
-  // 카운터
   document.getElementById("card-counter").textContent = `${currentCardIndex + 1} / ${filteredWords.length}`;
 }
 
@@ -216,7 +221,7 @@ function prevCard() {
   if (currentCardIndex > 0) {
     currentCardIndex--;
   } else {
-    currentCardIndex = filteredWords.length - 1; // 마지막 카드로 순환
+    currentCardIndex = filteredWords.length - 1;
   }
   resetCardFlip();
   renderCard();
@@ -226,7 +231,7 @@ function nextCard() {
   if (currentCardIndex < filteredWords.length - 1) {
     currentCardIndex++;
   } else {
-    currentCardIndex = 0; // 처음 카드로 순환
+    currentCardIndex = 0;
   }
   resetCardFlip();
   renderCard();
@@ -237,22 +242,21 @@ function resetCardFlip() {
   document.getElementById("flashcard").classList.remove("flipped");
 }
 
-// 음성 발음 재생 (Web Speech API)
 function speakWord(text) {
   if (!("speechSynthesis" in window)) {
     alert("이 브라우저는 음성 재생을 지원하지 않습니다.");
     return;
   }
 
-  window.speechSynthesis.cancel(); // 이전 발음 중단
+  window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "id-ID"; // 인도네시아어 코드
-  utterance.rate = 0.9; // 약간 여유 있는 속도
+  utterance.lang = "id-ID";
+  utterance.rate = 0.9;
   window.speechSynthesis.speak(utterance);
 }
 
 function speakCurrentWord(event) {
-  event.stopPropagation(); // 카드 뒤집기 이벤트 방지
+  event.stopPropagation();
   if (filteredWords.length > 0) {
     speakWord(filteredWords[currentCardIndex].indo);
   }
@@ -276,13 +280,11 @@ function loadQuizQuestion() {
   document.getElementById("quiz-counter").textContent = `문제 ${quizQuestionIndex + 1} / ${totalQuizQuestions}`;
   document.getElementById("quiz-score").textContent = `점수: ${quizScore}`;
 
-  // 랜덤으로 문제 단어 선정
   const randomIndex = Math.floor(Math.random() * wordList.length);
   currentQuizQuestion = wordList[randomIndex];
 
   document.getElementById("quiz-word").textContent = currentQuizQuestion.indo;
 
-  // 정답 1개 + 오답 3개 무작위 선택
   const wrongOptions = wordList
     .filter(item => item.meaning !== currentQuizQuestion.meaning)
     .sort(() => Math.random() - 0.5)
@@ -291,7 +293,6 @@ function loadQuizQuestion() {
 
   const options = [...wrongOptions, currentQuizQuestion.meaning].sort(() => Math.random() - 0.5);
 
-  // 보기 버튼 렌더링
   const optionsContainer = document.getElementById("quiz-options");
   optionsContainer.innerHTML = "";
 
@@ -306,7 +307,7 @@ function loadQuizQuestion() {
 
 function selectQuizAnswer(selectedBtn, answer) {
   const buttons = document.querySelectorAll(".quiz-option-btn");
-  buttons.forEach(btn => (btn.disabled = true)); // 버튼 비활성화
+  buttons.forEach(btn => (btn.disabled = true));
 
   const feedbackEl = document.getElementById("quiz-feedback");
   const nextBtn = document.getElementById("quiz-next-btn");
@@ -322,7 +323,6 @@ function selectQuizAnswer(selectedBtn, answer) {
     feedbackEl.textContent = `❌ 아쉬워요! 정답은: "${currentQuizQuestion.meaning}"`;
     feedbackEl.className = "quiz-feedback wrong";
 
-    // 정답 버튼 표시
     buttons.forEach(btn => {
       if (btn.textContent === currentQuizQuestion.meaning) {
         btn.classList.add("correct");
@@ -379,9 +379,208 @@ function speakQuizWord() {
   }
 }
 
+// =========================================
+// Gemini AI 튜터 & API Key 관리
+// =========================================
+function checkApiKeyUI() {
+  const badge = document.getElementById("api-key-badge");
+  const notice = document.getElementById("api-notice");
+
+  if (geminiApiKey) {
+    badge.textContent = "🔑 API 키 설정됨 ✓";
+    badge.classList.add("configured");
+    if (notice) notice.style.display = "none";
+  } else {
+    badge.textContent = "🔑 API 키 설정";
+    badge.classList.remove("configured");
+    if (notice) notice.style.display = "flex";
+  }
+}
+
+function toggleApiKeyModal() {
+  const modal = document.getElementById("api-modal");
+  modal.classList.toggle("open");
+  if (modal.classList.contains("open")) {
+    document.getElementById("gemini-key-input").value = geminiApiKey || "";
+  }
+}
+
+function openApiKeyModal() {
+  const modal = document.getElementById("api-modal");
+  modal.classList.add("open");
+  document.getElementById("gemini-key-input").value = geminiApiKey || "";
+}
+
+function closeApiKeyModal() {
+  document.getElementById("api-modal").classList.remove("open");
+}
+
+function closeModalOnBackdrop(event) {
+  if (event.target.id === "api-modal") {
+    closeApiKeyModal();
+  }
+}
+
+function saveApiKey() {
+  const inputVal = document.getElementById("gemini-key-input").value.trim();
+  if (!inputVal) {
+    alert("API 키를 입력해주세요.");
+    return;
+  }
+  geminiApiKey = inputVal;
+  localStorage.setItem(API_STORAGE_KEY, geminiApiKey);
+  checkApiKeyUI();
+  closeApiKeyModal();
+  alert("Gemini API 키가 안전하게 브라우저에 저장되었습니다!");
+}
+
+function clearApiKey() {
+  if (confirm("저장된 API 키를 삭제하시겠습니까?")) {
+    geminiApiKey = "";
+    localStorage.removeItem(API_STORAGE_KEY);
+    document.getElementById("gemini-key-input").value = "";
+    checkApiKeyUI();
+    closeApiKeyModal();
+  }
+}
+
+// 추천 질문 클릭
+function sendQuickPrompt(promptText) {
+  document.getElementById("chat-input").value = promptText;
+  sendMessage();
+}
+
+function handleChatKeyDown(event) {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+}
+
+async function sendMessage() {
+  const inputEl = document.getElementById("chat-input");
+  const messageText = inputEl.value.trim();
+  if (!messageText) return;
+
+  if (!geminiApiKey) {
+    openApiKeyModal();
+    alert("AI 튜터를 이용하시려면 먼저 Gemini API 키를 입력해주세요!");
+    return;
+  }
+
+  // 사용자 메시지 화면 표시
+  appendChatMessage("user", messageText);
+  inputEl.value = "";
+
+  // 로딩 상태 표시
+  const loadingEl = document.getElementById("ai-loading");
+  loadingEl.style.display = "flex";
+  scrollChatToBottom();
+
+  try {
+    const reply = await callGeminiAPI(messageText);
+    appendChatMessage("ai", reply);
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    appendChatMessage("ai", `❌ 오류가 발생했습니다: ${error.message}\nAPI 키가 올바른지 확인해주세요.`);
+  } finally {
+    loadingEl.style.display = "none";
+    scrollChatToBottom();
+  }
+}
+
+function appendChatMessage(sender, text) {
+  const chatBox = document.getElementById("chat-box");
+  const messageDiv = document.createElement("div");
+  messageDiv.className = `chat-message ${sender}-message`;
+
+  const avatarDiv = document.createElement("div");
+  avatarDiv.className = "chat-avatar";
+  avatarDiv.textContent = sender === "ai" ? "🤖" : "👤";
+
+  const bubbleDiv = document.createElement("div");
+  bubbleDiv.className = "chat-bubble";
+  bubbleDiv.innerHTML = formatMarkdownText(text);
+
+  messageDiv.appendChild(avatarDiv);
+  messageDiv.appendChild(bubbleDiv);
+  chatBox.appendChild(messageDiv);
+  scrollChatToBottom();
+}
+
+function scrollChatToBottom() {
+  const chatBox = document.getElementById("chat-box");
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// 간단 텍스트 줄바꿈/볼드 처리
+function formatMarkdownText(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n/g, "<br>");
+}
+
+// =========================================
+// Gemini API 직접 호출 (Model: gemini-3.8-flash)
+// =========================================
+async function callGeminiAPI(userQuery) {
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${geminiApiKey}`;
+
+  const systemInstruction = 
+    "당신은 친절하고 똑똑한 인도네시아어 전문 AI 튜터 '바틱(Batik)'입니다. " +
+    "사용자의 질문에 맞춰 인도네시아어 표현, 한국어 발음 표기, 뜻, 뉘앙스, 실생활 활용 예시를 간결하고 보기 쉽게 설명해주세요. " +
+    "친절하고 상냥한 어조로 가르쳐주세요.";
+
+  const requestBody = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: userQuery
+          }
+        ]
+      }
+    ],
+    systemInstruction: {
+      parts: [
+        {
+          text: systemInstruction
+        }
+      ]
+    }
+  };
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(requestBody)
+  });
+
+  if (!response.ok) {
+    const errData = await response.json().catch(() => ({}));
+    const errMsg = errData.error?.message || `HTTP ${response.status} 오류`;
+    throw new Error(errMsg);
+  }
+
+  const data = await response.json();
+  const candidate = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!candidate) {
+    throw new Error("AI 응답을 받아오지 못했습니다.");
+  }
+
+  return candidate;
+}
+
 // =====================
 // 초기화
 // =====================
 document.addEventListener("DOMContentLoaded", () => {
   renderCard();
+  checkApiKeyUI();
 });

@@ -3,28 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Halo Indo - 간단 인도네시아어 학습</title>
+  <title>Halo Indo - 간단 인도네시아어 학습 & AI 튜터</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-container">
     <header class="app-header">
-      <div class="logo">
-        <span class="flag-icon">🇮🇩</span>
-        <h1>Halo Indo!</h1>
+      <div class="header-top">
+        <div class="logo">
+          <span class="flag-icon">🇮🇩</span>
+          <h1>Halo Indo!</h1>
+        </div>
+        <button class="api-key-badge-btn" id="api-key-badge" onclick="toggleApiKeyModal()" title="Gemini API Key 설정">
+          🔑 API 키 설정
+        </button>
       </div>
-      <p class="subtitle">초간단 인도네시아어 단어장 & 퀴즈</p>
+      <p class="subtitle">인도네시아어 기초 단어장, 퀴즈 & Gemini AI 튜터</p>
     </header>
 
-    <!-- 모드 선택 탭 -->
+    <!-- 모드 선택 탭 (3개) -->
     <nav class="tab-nav">
       <button class="tab-btn active" id="tab-flashcard" onclick="switchMode('flashcard')">단어 카드</button>
       <button class="tab-btn" id="tab-quiz" onclick="switchMode('quiz')">미니 퀴즈</button>
+      <button class="tab-btn" id="tab-ai" onclick="switchMode('ai')">🤖 AI 튜터</button>
     </nav>
 
     <!-- 1. 단어 카드 모드 -->
     <section id="flashcard-section" class="mode-section active">
-      <!-- 카테고리 필터 -->
       <div class="category-filters" id="category-filters">
         <button class="filter-btn active" data-category="all" onclick="filterCategory('all')">전체</button>
         <button class="filter-btn" data-category="greeting" onclick="filterCategory('greeting')">기초 인사</button>
@@ -32,7 +37,6 @@
         <button class="filter-btn" data-category="numbers" onclick="filterCategory('numbers')">숫자</button>
       </div>
 
-      <!-- 플래시 카드 컨테이너 -->
       <div class="card-wrapper">
         <div class="flashcard" id="flashcard" onclick="flipCard()">
           <div class="card-inner">
@@ -54,7 +58,6 @@
         </div>
       </div>
 
-      <!-- 네비게이션 컨트롤 -->
       <div class="card-controls">
         <button class="control-btn" onclick="prevCard()">◀ 이전</button>
         <span class="card-counter" id="card-counter">1 / 15</span>
@@ -76,9 +79,7 @@
           <button class="voice-btn-sm" onclick="speakQuizWord()" title="발음 듣기">🔊</button>
         </div>
 
-        <div class="quiz-options" id="quiz-options">
-          <!-- 보기 버튼들이 자바스크립트로 생성됩니다 -->
-        </div>
+        <div class="quiz-options" id="quiz-options"></div>
 
         <div class="quiz-feedback" id="quiz-feedback"></div>
 
@@ -86,9 +87,80 @@
       </div>
     </section>
 
+    <!-- 3. AI 튜터 모드 -->
+    <section id="ai-section" class="mode-section">
+      <div class="ai-container">
+        <!-- API 키 미등록 경고 배너 -->
+        <div class="api-notice" id="api-notice">
+          <span>⚠️ AI 기능을 쓰려면 <strong>Gemini API 키</strong>가 필요합니다.</span>
+          <button class="notice-btn" onclick="openApiKeyModal()">API 키 입력하기</button>
+        </div>
+
+        <!-- 추천 질문 칩 -->
+        <div class="quick-chips">
+          <button class="chip-btn" onclick="sendQuickPrompt('식당에서 음식 주문할 때 자주 쓰는 표현 알려줘')">🍽️ 식당 주문</button>
+          <button class="chip-btn" onclick="sendQuickPrompt('호텔 체크인할 때 쓰는 인도네시아어 알려줘')">🏨 호텔 체크인</button>
+          <button class="chip-btn" onclick="sendQuickPrompt('인도네시아어로 자기소개하는 3문장 알려줘')">👋 자기소개</button>
+          <button class="chip-btn" onclick="sendQuickPrompt('깎아주세요(흥정)는 인도네시아어로 뭐야?')">🛍️ 가격 흥정</button>
+        </div>
+
+        <!-- 대화 내역 창 -->
+        <div class="chat-box" id="chat-box">
+          <div class="chat-message ai-message">
+            <div class="chat-avatar">🤖</div>
+            <div class="chat-bubble">
+              Halo! 저는 인도네시아어 AI 튜터 <strong>'바틱'</strong>입니다. (모델: gemini-3.8-flash)<br><br>
+              궁금한 표현, 번역, 문장 교정, 상황별 회화 무엇이든 편하게 물어보세요! 🇮🇩✨
+            </div>
+          </div>
+        </div>
+
+        <!-- 로딩 표시기 -->
+        <div class="ai-loading" id="ai-loading" style="display: none;">
+          <div class="typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+          <span>AI 튜터가 생각하고 있습니다...</span>
+        </div>
+
+        <!-- 메시지 입력창 -->
+        <div class="chat-input-wrapper">
+          <input type="text" id="chat-input" placeholder="질문이나 배우고 싶은 말을 입력하세요..." onkeydown="handleChatKeyDown(event)">
+          <button id="send-chat-btn" onclick="sendMessage()">전송</button>
+        </div>
+      </div>
+    </section>
+
     <footer class="app-footer">
-      <p>💡 Tip: Netlify 배포 연습용 프로젝트입니다.</p>
+      <p>💡 Tip: Gemini API 키는 본인 브라우저(localStorage)에만 안전하게 저장됩니다.</p>
     </footer>
+  </div>
+
+  <!-- API Key 설정 모달 창 -->
+  <div class="modal-backdrop" id="api-modal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🔑 Gemini API 키 설정</h3>
+        <button class="close-btn" onclick="closeApiKeyModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          Google AI의 <strong>gemini-3.8-flash</strong> 모델을 사용하여 AI 튜터와 대화할 수 있습니다.
+        </p>
+        <div class="input-group">
+          <label for="gemini-key-input">Gemini API Key</label>
+          <input type="password" id="gemini-key-input" placeholder="AIzaSy...">
+        </div>
+        <p class="modal-subtext">
+          * API 키는 서버로 전송되지 않고 브라우저에만 저장되므로 안전합니다.<br>
+          * 키가 없으신가요? <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio에서 무료로 발급받기 ↗</a>
+        </p>
+        <div class="modal-actions">
+          <button class="btn-clear" onclick="clearApiKey()">키 삭제</button>
+          <button class="btn-save" onclick="saveApiKey()">저장하기</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>
