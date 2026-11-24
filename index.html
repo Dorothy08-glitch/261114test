@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halo Indo - 간단 인도네시아어 학습</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="logo">
+        <span class="flag-icon">🇮🇩</span>
+        <h1>Halo Indo!</h1>
+      </div>
+      <p class="subtitle">초간단 인도네시아어 단어장 & 퀴즈</p>
+    </header>
+
+    <!-- 모드 선택 탭 -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" id="tab-flashcard" onclick="switchMode('flashcard')">단어 카드</button>
+      <button class="tab-btn" id="tab-quiz" onclick="switchMode('quiz')">미니 퀴즈</button>
+    </nav>
+
+    <!-- 1. 단어 카드 모드 -->
+    <section id="flashcard-section" class="mode-section active">
+      <!-- 카테고리 필터 -->
+      <div class="category-filters" id="category-filters">
+        <button class="filter-btn active" data-category="all" onclick="filterCategory('all')">전체</button>
+        <button class="filter-btn" data-category="greeting" onclick="filterCategory('greeting')">기초 인사</button>
+        <button class="filter-btn" data-category="daily" onclick="filterCategory('daily')">필수 일상</button>
+        <button class="filter-btn" data-category="numbers" onclick="filterCategory('numbers')">숫자</button>
+      </div>
+
+      <!-- 플래시 카드 컨테이너 -->
+      <div class="card-wrapper">
+        <div class="flashcard" id="flashcard" onclick="flipCard()">
+          <div class="card-inner">
+            <div class="card-front">
+              <span class="card-hint">카드를 누르면 뜻이 보입니다</span>
+              <h2 class="indo-word" id="card-front-word">Terima kasih</h2>
+              <p class="pronounce" id="card-front-pronounce">[뜨리마 까시]</p>
+              <button class="voice-btn" id="voice-btn" onclick="speakCurrentWord(event)" title="발음 듣기">🔊 발음 듣기</button>
+            </div>
+            <div class="card-back">
+              <span class="card-tag" id="card-back-tag">기초 인사</span>
+              <h3 class="korean-meaning" id="card-back-meaning">감사합니다 / 고맙습니다</h3>
+              <div class="example-box">
+                <p class="example-indo" id="card-back-example">Terima kasih banyak!</p>
+                <p class="example-ko" id="card-back-example-ko">정말 감사합니다!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 네비게이션 컨트롤 -->
+      <div class="card-controls">
+        <button class="control-btn" onclick="prevCard()">◀ 이전</button>
+        <span class="card-counter" id="card-counter">1 / 15</span>
+        <button class="control-btn" onclick="nextCard()">다음 ▶</button>
+      </div>
+    </section>
+
+    <!-- 2. 미니 퀴즈 모드 -->
+    <section id="quiz-section" class="mode-section">
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <span class="quiz-counter" id="quiz-counter">문제 1 / 5</span>
+          <span class="quiz-score" id="quiz-score">점수: 0</span>
+        </div>
+
+        <div class="quiz-question-box">
+          <p class="quiz-guide">다음 인도네시아어 단어의 올바른 뜻은?</p>
+          <h2 class="quiz-question-word" id="quiz-word">Selamat pagi</h2>
+          <button class="voice-btn-sm" onclick="speakQuizWord()" title="발음 듣기">🔊</button>
+        </div>
+
+        <div class="quiz-options" id="quiz-options">
+          <!-- 보기 버튼들이 자바스크립트로 생성됩니다 -->
+        </div>
+
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+
+        <button class="quiz-next-btn" id="quiz-next-btn" onclick="nextQuizQuestion()" style="display: none;">다음 문제 ▶</button>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <p>💡 Tip: Netlify 배포 연습용 프로젝트입니다.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
