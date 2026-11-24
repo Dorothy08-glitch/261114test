@@ -458,6 +458,60 @@ body {
   background: #f57c00;
 }
 
+/* 모델 선택 바 */
+.ai-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 8px 12px;
+  gap: 8px;
+}
+
+.model-select-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.model-select-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #495057;
+  white-space: nowrap;
+}
+
+.model-select {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.model-select:focus {
+  border-color: #e53935;
+}
+
+.model-status-indicator {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: #e3f2fd;
+  color: #1976d2;
+  white-space: nowrap;
+}
+
 /* 추천 질문 칩 */
 .quick-chips {
   display: flex;
@@ -488,7 +542,7 @@ body {
   background: #fafafa;
   border: 1px solid #e9ecef;
   border-radius: 16px;
-  height: 280px;
+  height: 270px;
   overflow-y: auto;
   padding: 14px;
   display: flex;

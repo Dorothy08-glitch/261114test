@@ -1,7 +1,7 @@
 # 🇮🇩 Halo Indo - 인도네시아어 학습 & Gemini AI 튜터
 
 순수 HTML, CSS, JavaScript로 제작된 인도네시아어 학습 웹 앱입니다.
-Google Gemini의 최신 모델 **`gemini-3.8-flash`** 기반 AI 튜터가 탑재되어 있습니다.
+Google Gemini의 **`gemini-3.8-flash`** 및 **`gemini-3.5-flash-lite`** 모델을 사용자가 직접 선택하여 대화할 수 있는 AI 튜터가 탑재되어 있습니다.
 
 ---
 
@@ -12,13 +12,26 @@ GitHub 저장소에 **아래 4개 파일**을 그대로 올리시면 됩니다:
 
 | 파일명 | 역할 | 설명 |
 |---|---|---|
-| `index.html` | 웹 앱 메인 페이지 | 단어 카드, 퀴즈, AI 튜터 탭 및 모달 UI |
-| `style.css` | 디자인 스타일시트 | 반응형 레이아웃, 3D 카드 뒤집기, 채팅창 UI |
-| `app.js` | 앱 핵심 로직 | 단어 데이터, 음성 발음(TTS), 퀴즈 및 **Gemini API 연동** |
+| `index.html` | 웹 앱 메인 페이지 | 단어 카드, 퀴즈, AI 튜터 탭, 모델 선택 드롭다운 및 모달 UI |
+| `style.css` | 디자인 스타일시트 | 반응형 레이아웃, 3D 카드 뒤집기, 모델 선택 바 및 채팅창 UI |
+| `app.js` | 앱 핵심 로직 | 단어 데이터, 음성 발음(TTS), 퀴즈 및 **Gemini 다중 모델 API 연동** |
 | `README.md` | 프로젝트 안내 문서 | 배포 및 사용 설명서 |
 
 > [!IMPORTANT]
 > **보안 안내**: API 키는 코드에 하드코딩되어 있지 않으며, 각 사용자가 브라우저 화면에서 직접 입력하여 본인 브라우저(`localStorage`)에만 저장되므로 **GitHub에 코드를 공개(Public)로 올려도 API 키 유출 위험이 전혀 없습니다.**
+
+---
+
+## 🤖 지원하는 AI 모델 (사용자 선택 가능)
+
+AI 튜터 탭 상단의 드롭다운 메뉴를 통해 원하는 모델을 자유롭게 변경할 수 있습니다:
+
+1. **`gemini-3.8-flash`** (기본값):
+   - 뛰어난 문맥 이해도와 풍부한 설명 능력을 제공하는 표준 고성능 모델
+2. **`gemini-3.5-flash-lite`**:
+   - 가볍고 빠른 응답 속도를 자랑하는 초경량 모델
+
+선택한 모델은 브라우저에 저장되어 다음 접속 시에도 유지됩니다.
 
 ---
 
@@ -34,7 +47,7 @@ GitHub 저장소에 **아래 4개 파일**을 그대로 올리시면 됩니다:
 ```bash
 git init
 git add index.html style.css app.js README.md
-git commit -m "feat: 인도네시아어 학습 앱 & Gemini 3.8 Flash AI 튜터"
+git commit -m "feat: gemini-3.5-flash-lite 및 gemini-3.8-flash 모델 선택 기능 추가"
 git branch -M main
 git remote add origin https://github.com/내아이디/내레포지토리이름.git
 git push -u origin main
@@ -53,7 +66,7 @@ git push -u origin main
 
 ---
 
-## 🤖 AI 튜터 사용 방법 (gemini-3.8-flash)
+## 🔑 AI 튜터 사용 방법
 1. 상단의 **"🔑 API 키 설정"** 버튼을 누릅니다.
 2. [Google AI Studio](https://aistudio.google.com/app/apikey)에서 무료로 발급받은 Gemini API Key를 입력하고 저장합니다.
-3. **🤖 AI 튜터** 탭에서 상황별 회화, 번역, 문장 교정 등을 자유롭게 질문할 수 있습니다!
+3. **🤖 AI 튜터** 탭에서 모델(`gemini-3.8-flash` 또는 `gemini-3.5-flash-lite`)을 선택한 후 상황별 회화, 번역, 문장 교정 등을 자유롭게 질문할 수 있습니다!

@@ -140,9 +140,14 @@ const totalQuizQuestions = 5;
 let quizScore = 0;
 let currentQuizQuestion = null;
 
-// Gemini API State
-const GEMINI_MODEL = "gemini-3.8-flash";
+// =========================================
+// Gemini API & 모델 State
+// =========================================
 const API_STORAGE_KEY = "halo_indo_gemini_api_key";
+const MODEL_STORAGE_KEY = "halo_indo_gemini_model";
+
+// 기본 모델: gemini-3.8-flash (지원: gemini-3.8-flash, gemini-3.5-flash-lite)
+let currentModel = localStorage.getItem(MODEL_STORAGE_KEY) || "gemini-3.8-flash";
 let geminiApiKey = localStorage.getItem(API_STORAGE_KEY) || "";
 
 // =====================
@@ -170,6 +175,7 @@ function switchMode(mode) {
     startQuiz();
   } else if (mode === "ai") {
     checkApiKeyUI();
+    updateModelUI();
   }
 }
 
@@ -380,8 +386,40 @@ function speakQuizWord() {
 }
 
 // =========================================
-// Gemini AI 튜터 & API Key 관리
+// Gemini AI 튜터 & 모델 선택 기능
 // =========================================
+function changeModel(newModel) {
+  currentModel = newModel;
+  localStorage.setItem(MODEL_STORAGE_KEY, currentModel);
+  updateModelUI();
+  appendChatMessage("ai", `🔄 사용할 AI 모델이 **${currentModel}**(으)로 변경되었습니다!`);
+}
+
+function updateModelUI() {
+  const selectEl = document.getElementById("gemini-model-select");
+  if (selectEl) {
+    selectEl.value = currentModel;
+  }
+
+  const welcomeModelName = document.getElementById("welcome-model-name");
+  if (welcomeModelName) {
+    welcomeModelName.textContent = currentModel;
+  }
+
+  const indicator = document.getElementById("model-status-indicator");
+  if (indicator) {
+    if (currentModel === "gemini-3.5-flash-lite") {
+      indicator.textContent = "⚡ 초경량·고속";
+      indicator.style.background = "#fff3e0";
+      indicator.style.color = "#e65100";
+    } else {
+      indicator.textContent = "🚀 고성능·표준";
+      indicator.style.background = "#e3f2fd";
+      indicator.style.color = "#1976d2";
+    }
+  }
+}
+
 function checkApiKeyUI() {
   const badge = document.getElementById("api-key-badge");
   const notice = document.getElementById("api-notice");
@@ -473,6 +511,10 @@ async function sendMessage() {
 
   // 로딩 상태 표시
   const loadingEl = document.getElementById("ai-loading");
+  const loadingText = document.getElementById("loading-text");
+  if (loadingText) {
+    loadingText.textContent = `${currentModel} 모델로 답변 생성 중...`;
+  }
   loadingEl.style.display = "flex";
   scrollChatToBottom();
 
@@ -481,7 +523,7 @@ async function sendMessage() {
     appendChatMessage("ai", reply);
   } catch (error) {
     console.error("Gemini API Error:", error);
-    appendChatMessage("ai", `❌ 오류가 발생했습니다: ${error.message}\nAPI 키가 올바른지 확인해주세요.`);
+    appendChatMessage("ai", `❌ 오류가 발생했습니다 (${currentModel}): ${error.message}\nAPI 키가 올바른지 확인해주세요.`);
   } finally {
     loadingEl.style.display = "none";
     scrollChatToBottom();
@@ -523,10 +565,10 @@ function formatMarkdownText(text) {
 }
 
 // =========================================
-// Gemini API 직접 호출 (Model: gemini-3.8-flash)
+// Gemini API 직접 호출 (선택된 currentModel 사용)
 // =========================================
 async function callGeminiAPI(userQuery) {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${geminiApiKey}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${geminiApiKey}`;
 
   const systemInstruction = 
     "당신은 친절하고 똑똑한 인도네시아어 전문 AI 튜터 '바틱(Batik)'입니다. " +
@@ -583,4 +625,5 @@ async function callGeminiAPI(userQuery) {
 document.addEventListener("DOMContentLoaded", () => {
   renderCard();
   checkApiKeyUI();
+  updateModelUI();
 });
